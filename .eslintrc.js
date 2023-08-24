@@ -20,7 +20,15 @@ module.exports = {
     '@typescript-eslint/interface-name-prefix': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/explicit-function-return-type': ['error'],
-    '@typescript-eslint/explicit-member-accessibility': ['error'],
+    '@typescript-eslint/explicit-member-accessibility': [
+      'error',
+      {
+        accessibility: 'explicit',
+        overrides: {
+          constructors: 'no-public',
+        },
+      },
+    ],
     '@typescript-eslint/no-explicit-any': ['warn'],
   },
 };
