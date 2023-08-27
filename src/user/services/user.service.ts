@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/services/prisma.service';
-import { User } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
 import { UserWithoutHashType } from '../../auth/types';
 
 @Injectable()
@@ -12,8 +12,22 @@ export class UserService {
       users.map((user: User) => {
         delete user.hash;
 
-        return user;
+        return user as UserWithoutHashType;
       }),
     );
+  }
+
+  public async getUserById(
+    userWhereUniqueInput: Prisma.UserWhereUniqueInput,
+  ): Promise<UserWithoutHashType> {
+    const user: User = await this.prismaService.user.findUnique({
+      where: userWhereUniqueInput,
+    });
+
+    if (!user) throw new NotFoundException("user doesn't exists");
+
+    delete user.hash;
+
+    return user as UserWithoutHashType;
   }
 }
