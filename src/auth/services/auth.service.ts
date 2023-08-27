@@ -3,12 +3,19 @@ import { PrismaService } from '../../prisma/services/prisma.service';
 import { AuthSignInDto, AuthSignUpDto } from '../dto';
 import * as argon from 'argon2';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+import { AccessTokenInterface } from '../interfaces';
 
 @Injectable()
 export class AuthService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(
+    private prismaService: PrismaService,
+    private jwtService: JwtService,
+    private configService: ConfigService,
+  ) {}
 
-  public async signUp(dto: AuthSignUpDto): Promise<any> {
+  public async signUp(dto: AuthSignUpDto): Promise<AccessTokenInterface> {
     const { email, firstName, lastName } = dto;
 
     const hash: string = await argon.hash(dto.password);
@@ -23,9 +30,7 @@ export class AuthService {
         },
       });
 
-      delete user.hash;
-
-      return user;
+      return this.signToken(user.id, user.email, user.firstName, user.lastName);
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
@@ -37,7 +42,7 @@ export class AuthService {
     }
   }
 
-  public async signIn(dto: AuthSignInDto): Promise<any> {
+  public async signIn(dto: AuthSignInDto): Promise<AccessTokenInterface> {
     const { email, password } = dto;
 
     const user = await this.prismaService.user.findUnique({
@@ -52,7 +57,27 @@ export class AuthService {
 
     if (!pwMatches) throw new ForbiddenException('Credentials incorrect');
 
-    delete user.hash;
-    return user;
+    return this.signToken(user.id, user.email, user.firstName, user.lastName);
+  }
+
+  private async signToken(
+    id: number,
+    email: string,
+    firstName: string,
+    lastName: string,
+  ): Promise<AccessTokenInterface> {
+    const payload = {
+      id,
+      email,
+      firstName,
+      lastName,
+    };
+
+    const access_token: string = await this.jwtService.signAsync(payload, {
+      expiresIn: '15m',
+      secret: this.configService.get('JWT_SECRET'),
+    });
+
+    return { access_token };
   }
 }
