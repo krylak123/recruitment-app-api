@@ -1,12 +1,13 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { User } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import * as argon from 'argon2';
 
 import { PrismaService } from '../../prisma/services';
 import { AuthSignInDto, AuthSignUpDto } from '../dto';
-import { AccessTokenInterface } from '../interfaces';
+import { AccessTokenInterface, TokenPayloadInterface } from '../interfaces';
 
 @Injectable()
 export class AuthService {
@@ -17,12 +18,12 @@ export class AuthService {
   ) {}
 
   public async signUp(dto: AuthSignUpDto): Promise<AccessTokenInterface> {
-    const { email, firstName, lastName } = dto;
+    const { email, password, firstName, lastName } = dto;
 
-    const hash: string = await argon.hash(dto.password);
+    const hash: string = await argon.hash(password);
 
     try {
-      const user = await this.prismaService.user.create({
+      const user: User = await this.prismaService.user.create({
         data: {
           email,
           hash,
@@ -31,7 +32,7 @@ export class AuthService {
         },
       });
 
-      return this.signToken(user.id, user.email, user.firstName, user.lastName);
+      return this.signToken(user);
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
@@ -46,7 +47,7 @@ export class AuthService {
   public async signIn(dto: AuthSignInDto): Promise<AccessTokenInterface> {
     const { email, password } = dto;
 
-    const user = await this.prismaService.user.findUnique({
+    const user: User = await this.prismaService.user.findUnique({
       where: {
         email,
       },
@@ -54,24 +55,23 @@ export class AuthService {
 
     if (!user) throw new ForbiddenException('Credentials incorrect');
 
-    const pwMatches = await argon.verify(user.hash, password);
+    const pwMatches: boolean = await argon.verify(user.hash, password);
 
     if (!pwMatches) throw new ForbiddenException('Credentials incorrect');
 
-    return this.signToken(user.id, user.email, user.firstName, user.lastName);
+    return this.signToken(user);
   }
 
-  private async signToken(
-    id: number,
-    email: string,
-    firstName: string,
-    lastName: string,
-  ): Promise<AccessTokenInterface> {
-    const payload = {
-      id,
+  private async signToken(user: User): Promise<AccessTokenInterface> {
+    const { id, email, firstName, lastName, createAt, updatedAt } = user;
+
+    const payload: TokenPayloadInterface = {
+      sub: id,
       email,
       firstName,
       lastName,
+      createAt,
+      updatedAt,
     };
 
     const access_token: string = await this.jwtService.signAsync(payload, {

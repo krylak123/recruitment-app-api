@@ -1,9 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
+import { User } from '@prisma/client';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
 import { PrismaService } from '../../../prisma/services';
+import { TokenPayloadInterface } from '../../interfaces';
+import { UserWithoutHashType } from '../../types';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
@@ -17,25 +20,17 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     });
   }
 
-  public async validate(payload: {
-    id: number;
-    email: string;
-    firstName: string;
-    lastName: string;
-  }): Promise<{
-    id: number;
-    email: string;
-    firstName: string;
-    lastName: string;
-  }> {
-    const user = await this.prismaService.user.findUnique({
+  public async validate(
+    payload: TokenPayloadInterface,
+  ): Promise<UserWithoutHashType> {
+    const user: User = await this.prismaService.user.findUnique({
       where: {
-        id: payload.id,
+        id: payload.sub,
       },
     });
 
     delete user.hash;
 
-    return user;
+    return user as UserWithoutHashType;
   }
 }
