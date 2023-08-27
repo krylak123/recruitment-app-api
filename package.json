@@ -82,6 +82,11 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^@authM/(.*)$": "<rootDir>/src/auth/$1",
+      "^@prismaM/(.*)$": "<rootDir>/src/prisma/$1",
+      "~/(.*)": "<rootDir>/src/$1"
+    }
   }
 }

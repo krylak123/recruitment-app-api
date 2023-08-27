@@ -1,6 +1,3 @@
-import { GetUser } from '@auth/decorators';
-import { JwtGuard } from '@auth/guards';
-import { UserWithoutHashType } from '@auth/types';
 import {
   Controller,
   Get,
@@ -11,6 +8,9 @@ import {
 } from '@nestjs/common';
 import { User } from '@prisma/client';
 
+import { GetUser } from '../../auth/decorators';
+import { JwtGuard } from '../../auth/guards';
+import { UserWithoutHashType } from '../../auth/types';
 import { UserService } from '../services';
 
 @UseGuards(JwtGuard)

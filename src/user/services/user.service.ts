@@ -1,7 +1,8 @@
-import { UserWithoutHashType } from '@auth/types';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
-import { PrismaService } from '@prisma/services';
+
+import { UserWithoutHashType } from '../../auth/types';
+import { PrismaService } from '../../prisma/services';
 
 @Injectable()
 export class UserService {
