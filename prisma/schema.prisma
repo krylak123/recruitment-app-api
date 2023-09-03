@@ -11,13 +11,56 @@ datasource db {
 }
 
 model User {
-  id Int @id @default(autoincrement())
-  email String @unique
-  hash String
+  id        String   @id @default(uuid())
+  role      Role     @default(USER)
+  email     String   @unique
+  hash      String
   firstName String
-  lastName String
-  createAt DateTime @default(now())
+  lastName  String
+  createAt  DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@map("users")
+}
+
+// model Tag {
+//   id            String          @id @default(uuid())
+//   name          String
+//   questionClose QuestionClose[]
+//
+//   @@map("tags")
+// }
+
+// model QuestionCloseAnswer {
+//   id            String          @id @default(uuid())
+//   content       String
+//   isCorrect     Boolean
+//   questionClose QuestionClose[]
+//
+//
+//   @@map("closeQuestionAnswers")
+// }
+
+model QuestionClose {
+  id        String                @id @default(uuid())
+  name      String                @unique
+  content   String
+  expLevel  ExpLevel
+  // tags      Tag[]
+  timeLimit Int
+  // answers   QuestionCloseAnswer[]
+
+  @@map("closeQuestions")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum ExpLevel {
+  ENTRY
+  JUNIOR
+  MID
+  SSENIOR
 }
