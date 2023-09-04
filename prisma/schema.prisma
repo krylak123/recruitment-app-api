@@ -23,34 +23,31 @@ model User {
   @@map("users")
 }
 
-// model Tag {
-//   id            String          @id @default(uuid())
-//   name          String
-//   questionClose QuestionClose[]
-//
-//   @@map("tags")
-// }
-
-// model QuestionCloseAnswer {
-//   id            String          @id @default(uuid())
-//   content       String
-//   isCorrect     Boolean
-//   questionClose QuestionClose[]
-//
-//
-//   @@map("closeQuestionAnswers")
-// }
-
 model QuestionClose {
-  id        String                @id @default(uuid())
-  name      String                @unique
+  id        String   @id @default(uuid())
+  name      String   @unique
   content   String
   expLevel  ExpLevel
-  // tags      Tag[]
   timeLimit Int
-  // answers   QuestionCloseAnswer[]
+  answers Json[]
 
   @@map("closeQuestions")
+}
+
+model QuestionCloseAnswer {
+  id        String   @id @default(uuid())
+  content   String
+  isCorrect Boolean
+}
+
+model QuestionOpen {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  content   String
+  expLevel  ExpLevel
+  timeLimit Int
+
+  @@map("openQuestions")
 }
 
 enum Role {
@@ -62,5 +59,5 @@ enum ExpLevel {
   ENTRY
   JUNIOR
   MID
-  SSENIOR
+  SENIOR
 }
