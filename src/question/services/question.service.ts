@@ -11,7 +11,22 @@ export class QuestionService {
   constructor(private prismaService: PrismaService) {}
 
   public async getAllCloseQuestion(): Promise<QuestionClose[]> {
-    return this.prismaService.questionClose.findMany();
+    return this.prismaService.questionClose.findMany({
+      select: {
+        id: true,
+        name: true,
+        content: true,
+        expLevel: true,
+        timeLimit: true,
+        answers: {
+          select: {
+            id: true,
+            content: true,
+            isCorrect: true,
+          },
+        },
+      },
+    });
   }
 
   public async getAllOpenQuestions(): Promise<QuestionOpen[]> {
@@ -20,8 +35,10 @@ export class QuestionService {
 
   public async createCloseQuestion(dto: QuestionCloseDto): Promise<void> {
     const { name, content, expLevel, timeLimit, answers } = dto;
-
-    console.log(answers);
+    const answersObjs = answers.map(item => ({
+      content: item.content,
+      isCorrect: item.isCorrect,
+    }));
 
     try {
       await this.prismaService.questionClose.create({
@@ -30,11 +47,17 @@ export class QuestionService {
           content,
           expLevel,
           timeLimit,
+          answers: {
+            createMany: {
+              data: answersObjs,
+            },
+          },
         },
       });
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
+          console.log(error);
           throw new ForbiddenException('Credentials taken');
         }
       }

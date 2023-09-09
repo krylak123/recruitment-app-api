@@ -1,5 +1,11 @@
-import { ExpLevel, QuestionCloseAnswer } from '@prisma/client';
-import { ArrayNotEmpty, IsArray, IsEnum, IsNotEmpty } from 'class-validator';
+import { ExpLevel } from '@prisma/client';
+import {
+  ArrayNotEmpty,
+  IsArray,
+  IsBoolean,
+  IsEnum,
+  IsNotEmpty,
+} from 'class-validator';
 
 export class QuestionCloseDto {
   @IsNotEmpty()
@@ -17,5 +23,14 @@ export class QuestionCloseDto {
 
   @IsArray()
   @ArrayNotEmpty()
-  public answers: QuestionCloseAnswer[];
+  public answers: QuestionCloseAnswerDto[];
+}
+
+class QuestionCloseAnswerDto {
+  @IsNotEmpty()
+  public content: string;
+
+  @IsBoolean()
+  @IsNotEmpty()
+  public isCorrect: boolean;
 }

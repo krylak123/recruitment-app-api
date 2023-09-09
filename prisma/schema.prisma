@@ -29,7 +29,7 @@ model QuestionClose {
   content   String
   expLevel  ExpLevel
   timeLimit Int
-  answers Json[]
+  answers   QuestionCloseAnswer[]
 
   @@map("closeQuestions")
 }
@@ -38,6 +38,11 @@ model QuestionCloseAnswer {
   id        String   @id @default(uuid())
   content   String
   isCorrect Boolean
+
+  questionCloseId String
+  questionClose QuestionClose @relation(fields: [questionCloseId], references: [id])
+
+  @@map("closeQuestionAnswers")
 }
 
 model QuestionOpen {
@@ -52,6 +57,7 @@ model QuestionOpen {
 
 enum Role {
   USER
+  EMPLOYEE
   ADMIN
 }
 
