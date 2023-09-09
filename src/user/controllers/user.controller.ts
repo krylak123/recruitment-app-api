@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Get,
-  HttpStatus,
-  Param,
-  ParseIntPipe,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { User } from '@prisma/client';
 
 import { GetUser } from '../../auth/decorators';
@@ -30,12 +23,9 @@ export class UserController {
 
   @Get(':id')
   public getUserById(
-    @Param(
-      'id',
-      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
-    )
+    @Param('id')
     paramId: string,
   ): Promise<UserWithoutHashType> {
-    return this.userService.getUserById({ id: +paramId });
+    return this.userService.getUserById({ id: paramId });
   }
 }
