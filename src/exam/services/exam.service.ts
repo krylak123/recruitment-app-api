@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Exam, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 import { PrismaService } from '../../prisma/services';
@@ -13,13 +13,17 @@ import { ExamDto } from '../dto/exam.dto';
 export class ExamService {
   constructor(private prismaService: PrismaService) {}
 
-  public async getAllExams(): Promise<Exam[]> {
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  public async getAllExams() {
     return this.prismaService.exam.findMany({
       select: {
         id: true,
         name: true,
         description: true,
         expLevel: true,
+        createAt: true,
+        timeLimitSummary: true,
+        questionQuantity: true,
         questionOpenList: {
           select: {
             id: true,
@@ -49,16 +53,18 @@ export class ExamService {
     });
   }
 
-  public async getExamById(
-    examWhereUniqueInput: Prisma.ExamWhereUniqueInput,
-  ): Promise<Exam> {
-    const exam: Exam = await this.prismaService.exam.findUnique({
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  public async getExamById(examWhereUniqueInput: Prisma.ExamWhereUniqueInput) {
+    const exam = await this.prismaService.exam.findUnique({
       where: examWhereUniqueInput,
       select: {
         id: true,
         name: true,
         description: true,
         expLevel: true,
+        createAt: true,
+        timeLimitSummary: true,
+        questionQuantity: true,
         questionOpenList: {
           select: {
             id: true,
@@ -96,17 +102,14 @@ export class ExamService {
     const { name, description, expLevel, questionOpenList, questionCloseList } =
       dto;
 
-    console.log({
-      questionOpenList,
-      questionCloseList,
-    });
-
     try {
       await this.prismaService.exam.create({
         data: {
           name,
           description,
           expLevel,
+          timeLimitSummary: 999,
+          questionQuantity: questionOpenList.length + questionCloseList.length,
           questionOpenList: {
             connect: questionOpenList.map(id => ({ id })),
           },

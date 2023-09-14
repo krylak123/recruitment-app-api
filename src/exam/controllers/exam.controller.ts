@@ -7,7 +7,6 @@ import {
   Param,
   Post,
 } from '@nestjs/common';
-import { Exam } from '@prisma/client';
 
 import { ExamDto } from '../dto/exam.dto';
 import { ExamService } from '../services/exam.service';
@@ -18,15 +17,17 @@ import { ExamService } from '../services/exam.service';
 export class ExamController {
   constructor(private questionService: ExamService) {}
   @Get('all')
-  public getAllExams(): Promise<Exam[]> {
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  public getAllExams() {
     return this.questionService.getAllExams();
   }
 
   @Get(':id')
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   public getExamById(
     @Param('id')
     paramId: string,
-  ): Promise<Exam> {
+  ) {
     return this.questionService.getExamById({ id: paramId });
   }
 

@@ -64,6 +64,9 @@ model Exam {
   name String @unique
   description String
   expLevel  ExpLevel
+  createAt  DateTime @default(now())
+  timeLimitSummary Int
+  questionQuantity Int
   questionOpenList QuestionOpen[]
   questionCloseList QuestionClose[]
 
