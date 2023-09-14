@@ -1,5 +1,5 @@
 import { ExpLevel } from '@prisma/client';
-import { IsEnum, IsNotEmpty } from 'class-validator';
+import { IsArray, IsEnum, IsNotEmpty } from 'class-validator';
 
 export class ExamDto {
   @IsNotEmpty()
@@ -11,4 +11,10 @@ export class ExamDto {
   @IsEnum(ExpLevel)
   @IsNotEmpty()
   public expLevel: ExpLevel;
+
+  @IsArray()
+  public questionCloseList: string[];
+
+  @IsArray()
+  public questionOpenList: string[];
 }
