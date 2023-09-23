@@ -31,6 +31,8 @@ model QuestionClose {
   timeLimit Int
   answers   QuestionCloseAnswer[]
 
+  exams Exam[]
+
   @@map("closeQuestions")
 }
 
@@ -52,7 +54,23 @@ model QuestionOpen {
   expLevel  ExpLevel
   timeLimit Int
 
+  exams Exam[]
+
   @@map("openQuestions")
+}
+
+model Exam {
+  id String @id @default(uuid())
+  name String @unique
+  description String
+  expLevel  ExpLevel
+  createAt  DateTime @default(now())
+  timeLimitSummary Int
+  questionQuantity Int
+  questionOpenList QuestionOpen[]
+  questionCloseList QuestionClose[]
+
+  @@map("exams")
 }
 
 enum Role {
