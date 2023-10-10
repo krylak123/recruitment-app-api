@@ -6,13 +6,14 @@ import {
   HttpStatus,
   Param,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 
+import { JwtGuard } from '../../auth/guards';
 import { ExamDto } from '../dto/exam.dto';
 import { ExamService } from '../services/exam.service';
 
-// TODO jak ogarnę auth na FE odkomentować
-// @UseGuards(JwtGuard)
+@UseGuards(JwtGuard)
 @Controller('exam')
 export class ExamController {
   constructor(private questionService: ExamService) {}
