@@ -4,6 +4,7 @@ import { User } from '@prisma/client';
 import { GetUser } from '../../auth/decorators';
 import { JwtGuard } from '../../auth/guards';
 import { UserWithoutHashType } from '../../auth/types';
+import { ListResponseInterface } from '../../shared/models';
 import { UserService } from '../services';
 
 @UseGuards(JwtGuard)
@@ -11,9 +12,18 @@ import { UserService } from '../services';
 export class UserController {
   constructor(private userService: UserService) {}
 
-  @Get('all')
-  public getAllUsers(): Promise<UserWithoutHashType[]> {
-    return this.userService.getAllUsers();
+  @Get('candidates')
+  public getAllCandidates(): Promise<
+    ListResponseInterface<UserWithoutHashType>
+  > {
+    return this.userService.getAllCandidates();
+  }
+
+  @Get('employees')
+  public getAllEmployees(): Promise<
+    ListResponseInterface<UserWithoutHashType>
+  > {
+    return this.userService.getAllEmployees();
   }
 
   @Get('me')
