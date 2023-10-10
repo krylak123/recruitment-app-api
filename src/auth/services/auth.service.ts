@@ -63,15 +63,13 @@ export class AuthService {
   }
 
   private async signToken(user: User): Promise<AccessTokenInterface> {
-    const { id, email, firstName, lastName, createAt, updatedAt } = user;
+    const { id, firstName, lastName, role } = user;
 
     const payload: TokenPayloadInterface = {
       sub: id,
-      email,
       firstName,
       lastName,
-      createAt,
-      updatedAt,
+      role,
     };
 
     const access_token: string = await this.jwtService.signAsync(payload, {

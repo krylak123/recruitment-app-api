@@ -5,15 +5,16 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { QuestionClose, QuestionOpen } from '@prisma/client';
 
+import { JwtGuard } from '../../auth/guards';
 import { QuestionCloseDto } from '../dto/question-close.dto';
 import { QuestionOpenDto } from '../dto/question-open.dto';
 import { QuestionService } from '../services/question.service';
 
-// TODO jak ogarnę auth na FE odkomentować
-// @UseGuards(JwtGuard)
+@UseGuards(JwtGuard)
 @Controller('question')
 export class QuestionController {
   constructor(private questionService: QuestionService) {}

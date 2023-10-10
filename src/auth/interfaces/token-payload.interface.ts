@@ -1,8 +1,8 @@
+import { Role } from '@prisma/client';
+
 export interface TokenPayloadInterface {
   sub: string;
-  email: string;
+  role: Role;
   firstName: string;
   lastName: string;
-  createAt: Date;
-  updatedAt: Date;
 }
