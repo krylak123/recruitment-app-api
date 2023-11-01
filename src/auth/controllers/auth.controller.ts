@@ -1,6 +1,14 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 
 import { AuthSignInDto, AuthSignUpDto } from '../dto';
+import { JwtGuard } from '../guards';
 import { AccessTokenInterface } from '../interfaces';
 import { AuthService } from '../services';
 
@@ -8,9 +16,17 @@ import { AuthService } from '../services';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @Post('sign-up')
-  public signUp(@Body() dto: AuthSignUpDto): Promise<AccessTokenInterface> {
-    return this.authService.signUp(dto);
+  @Post('sign-up-user')
+  public signUpUser(@Body() dto: AuthSignUpDto): Promise<AccessTokenInterface> {
+    return this.authService.signUp(dto, false);
+  }
+
+  @UseGuards(JwtGuard)
+  @Post('sign-up-employee')
+  public signUpEmployee(
+    @Body() dto: AuthSignUpDto,
+  ): Promise<AccessTokenInterface> {
+    return this.authService.signUp(dto, true);
   }
 
   @HttpCode(HttpStatus.OK)
