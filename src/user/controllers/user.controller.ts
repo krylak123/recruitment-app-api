@@ -1,12 +1,13 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { User } from '@prisma/client';
 
 import { GetUser } from '../../auth/decorators';
+import { JwtGuard } from '../../auth/guards';
 import { UserWithoutHashType } from '../../auth/types';
 import { ListResponseInterface } from '../../shared/models';
 import { UserService } from '../services';
 
-// @UseGuards(JwtGuard)
+@UseGuards(JwtGuard)
 @Controller('users')
 export class UserController {
   constructor(private userService: UserService) {}
