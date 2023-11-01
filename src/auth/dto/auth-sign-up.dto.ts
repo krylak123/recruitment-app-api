@@ -1,6 +1,19 @@
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  IsDefined,
+  IsEmail,
+  IsNotEmpty,
+  IsObject,
+  ValidateNested,
+} from 'class-validator';
 
-export class AuthSignUpDto {
+export class AuthSignUpCommonGroupDto {
+  @IsNotEmpty()
+  public firstName: string;
+
+  @IsNotEmpty()
+  public lastName: string;
+
   @IsEmail()
   @IsNotEmpty()
   public email: string;
@@ -9,8 +22,13 @@ export class AuthSignUpDto {
   public password: string;
 
   @IsNotEmpty()
-  public firstName: string;
+  public phone: string;
+}
 
-  @IsNotEmpty()
-  public lastName: string;
+export class AuthSignUpDto {
+  @IsDefined()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => AuthSignUpCommonGroupDto)
+  public commonGroup: AuthSignUpCommonGroupDto;
 }
