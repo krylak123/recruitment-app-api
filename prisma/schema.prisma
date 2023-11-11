@@ -17,8 +17,18 @@ model User {
   phone     String
   createAt  DateTime @default(now())
   updatedAt DateTime @updatedAt
+  additionalInfo UserAdditionalInfo?
 
   @@map("users")
+}
+
+model UserAdditionalInfo {
+  id String @id @default(uuid())
+  gitRepoLink String
+  acceptedRodo Boolean
+
+  user User @relation(fields: [userId], references: [id])
+  userId String @unique
 }
 
 model QuestionClose {

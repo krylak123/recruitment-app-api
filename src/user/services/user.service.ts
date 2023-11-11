@@ -22,6 +22,23 @@ export class UserService {
         where: {
           role: Role.USER,
         },
+        select: {
+          role: true,
+          hash: true,
+          id: true,
+          phone: true,
+          lastName: true,
+          firstName: true,
+          email: true,
+          createAt: true,
+          updatedAt: true,
+          additionalInfo: {
+            select: {
+              gitRepoLink: true,
+              acceptedRodo: true,
+            },
+          },
+        },
       })
       .then((users: User[]) =>
         users.map((user: User) => {

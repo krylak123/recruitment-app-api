@@ -25,6 +25,10 @@ export class AuthService {
 
     const hash: string = await argon.hash(password);
 
+    const additionalInfoIsAvailable: boolean = !!(
+      dto?.additionalGroup && dto?.consentsGroup
+    );
+
     try {
       const user: User = await this.prismaService.user.create({
         data: {
@@ -34,6 +38,17 @@ export class AuthService {
           lastName,
           phone,
           role: registerAsEmployee ? Role.EMPLOYEE : Role.USER,
+          additionalInfo: {
+            create: additionalInfoIsAvailable
+              ? {
+                  gitRepoLink: dto.additionalGroup.gitRepoLink,
+                  acceptedRodo: dto.consentsGroup.acceptedRodo,
+                }
+              : undefined,
+          },
+        },
+        include: {
+          additionalInfo: additionalInfoIsAvailable,
         },
       });
 
