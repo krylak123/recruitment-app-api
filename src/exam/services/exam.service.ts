@@ -3,19 +3,20 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Exam, Prisma } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 import { PrismaService } from '../../prisma/services';
+import { ListResponseInterface } from '../../shared/models';
 import { ExamDto } from '../dto/exam.dto';
 
 @Injectable()
 export class ExamService {
   constructor(private prismaService: PrismaService) {}
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  public async getAllExams() {
-    return this.prismaService.exam.findMany({
+  public async getAllExams(): Promise<ListResponseInterface<Exam>> {
+    const quantity: number = await this.prismaService.exam.count();
+    const data: Exam[] = await this.prismaService.exam.findMany({
       select: {
         id: true,
         name: true,
@@ -51,11 +52,17 @@ export class ExamService {
         },
       },
     });
+
+    return {
+      quantity,
+      data,
+    };
   }
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  public async getExamById(examWhereUniqueInput: Prisma.ExamWhereUniqueInput) {
-    const exam = await this.prismaService.exam.findUnique({
+  public async getExamById(
+    examWhereUniqueInput: Prisma.ExamWhereUniqueInput,
+  ): Promise<Exam> {
+    const exam: Exam = await this.prismaService.exam.findUnique({
       where: examWhereUniqueInput,
       select: {
         id: true,
