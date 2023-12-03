@@ -8,8 +8,10 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
+import { Exam } from '@prisma/client';
 
 import { JwtGuard } from '../../auth/guards';
+import { ListResponseInterface } from '../../shared/models';
 import { ExamDto } from '../dto/exam.dto';
 import { ExamService } from '../services/exam.service';
 
@@ -18,8 +20,7 @@ import { ExamService } from '../services/exam.service';
 export class ExamController {
   constructor(private questionService: ExamService) {}
   @Get('all')
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  public getAllExams() {
+  public getAllExams(): Promise<ListResponseInterface<Exam>> {
     return this.questionService.getAllExams();
   }
 

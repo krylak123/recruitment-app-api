@@ -3,6 +3,7 @@ import { QuestionClose, QuestionOpen } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 import { PrismaService } from '../../prisma/services';
+import { ListResponseInterface } from '../../shared/models';
 import { QuestionCloseDto } from '../dto/question-close.dto';
 import { QuestionOpenDto } from '../dto/question-open.dto';
 
@@ -10,27 +11,45 @@ import { QuestionOpenDto } from '../dto/question-open.dto';
 export class QuestionService {
   constructor(private prismaService: PrismaService) {}
 
-  public async getAllCloseQuestion(): Promise<QuestionClose[]> {
-    return this.prismaService.questionClose.findMany({
-      select: {
-        id: true,
-        name: true,
-        content: true,
-        expLevel: true,
-        timeLimit: true,
-        answers: {
-          select: {
-            id: true,
-            content: true,
-            isCorrect: true,
+  public async getAllCloseQuestion(): Promise<
+    ListResponseInterface<QuestionClose>
+  > {
+    const quantity: number = await this.prismaService.questionClose.count();
+    const data: QuestionClose[] =
+      await this.prismaService.questionClose.findMany({
+        select: {
+          id: true,
+          name: true,
+          content: true,
+          expLevel: true,
+          timeLimit: true,
+          answers: {
+            select: {
+              id: true,
+              content: true,
+              isCorrect: true,
+            },
           },
         },
-      },
-    });
+      });
+
+    return {
+      quantity,
+      data,
+    };
   }
 
-  public async getAllOpenQuestions(): Promise<QuestionOpen[]> {
-    return this.prismaService.questionOpen.findMany();
+  public async getAllOpenQuestions(): Promise<
+    ListResponseInterface<QuestionOpen>
+  > {
+    const quantity: number = await this.prismaService.questionOpen.count();
+    const data: QuestionOpen[] =
+      await this.prismaService.questionOpen.findMany();
+
+    return {
+      quantity,
+      data,
+    };
   }
 
   public async createCloseQuestion(dto: QuestionCloseDto): Promise<void> {
@@ -57,7 +76,6 @@ export class QuestionService {
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
-          console.log(error);
           throw new ForbiddenException('Credentials taken');
         }
       }
