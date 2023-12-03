@@ -10,6 +10,7 @@ import {
 import { QuestionClose, QuestionOpen } from '@prisma/client';
 
 import { JwtGuard } from '../../auth/guards';
+import { ListResponseInterface } from '../../shared/models';
 import { QuestionCloseDto } from '../dto/question-close.dto';
 import { QuestionOpenDto } from '../dto/question-open.dto';
 import { QuestionService } from '../services/question.service';
@@ -19,12 +20,12 @@ import { QuestionService } from '../services/question.service';
 export class QuestionController {
   constructor(private questionService: QuestionService) {}
   @Get('close/all')
-  public getAllCloseQuestions(): Promise<QuestionClose[]> {
+  public getAllCloseQuestions(): Promise<ListResponseInterface<QuestionClose>> {
     return this.questionService.getAllCloseQuestion();
   }
 
   @Get('open/all')
-  public getAllOpenQuestions(): Promise<QuestionOpen[]> {
+  public getAllOpenQuestions(): Promise<ListResponseInterface<QuestionOpen>> {
     return this.questionService.getAllOpenQuestions();
   }
 
